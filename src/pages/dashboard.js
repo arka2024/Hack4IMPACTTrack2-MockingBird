@@ -1,97 +1,105 @@
-// Dashboard Page
 export function renderDashboardPage() {
   return `
     <div class="dashboard-page">
-      <div class="dashboard-header">
-        <h1>Threat Intelligence Center</h1>
-        <p>Every attack attempt. Every blocked input. Every attacker fingerprint. All in one place.</p>
-      </div>
-
-      <!-- KPI Cards -->
-      <div class="kpi-grid">
-        <div class="kpi-card red pulsing" id="kpi-attacks">
-          <div class="kpi-label">Total Attacks Blocked</div>
-          <div class="kpi-value" id="kpi-attacks-value">0</div>
-          <div class="kpi-change up">↑ 12% from last hour</div>
-        </div>
-        <div class="kpi-card green" id="kpi-honeypot">
-          <div class="kpi-label">Honeypot Captures</div>
-          <div class="kpi-value" id="kpi-honeypot-value">0</div>
-          <div class="kpi-change up">↑ 8 new today</div>
-        </div>
-        <div class="kpi-card amber" id="kpi-response">
-          <div class="kpi-label">Avg Detection (ms)</div>
-          <div class="kpi-value" id="kpi-response-value">0</div>
-          <div class="kpi-change down">↓ 3ms improvement</div>
-        </div>
-        <div class="kpi-card blue" id="kpi-confidence">
-          <div class="kpi-label">System Confidence</div>
-          <div class="kpi-value" id="kpi-confidence-value">0%</div>
-          <div class="kpi-change down" style="color: var(--safe-green);">● Optimal</div>
-        </div>
-      </div>
-
-      <!-- Charts -->
-      <div class="charts-grid">
-        <!-- Line Chart -->
-        <div class="chart-card">
-          <h3>Threat Score Over Time</h3>
-          <div class="chart-area">
-            <canvas id="threat-line-chart"></canvas>
+      <div class="dashboard-header fade-in">
+        <h1 style="display: flex; justify-content: space-between; align-items: center;">
+          THREAT INTELLIGENCE CENTER
+          <div style="font-family: var(--font-mono); font-size: 14px; font-weight: 500; color: var(--safe-green); display: flex; align-items: center; gap: 8px;">
+            <div class="indicator" style="width: 8px; height: 8px; border-radius: 50%; background: var(--safe-green); box-shadow: 0 0 8px var(--safe-green); animation: dot-pulse 1.5s infinite;"></div>
+            SYSTEM SECURE
           </div>
-        </div>
+        </h1>
+        <p>Live monitoring of incoming adversarial activity across all protected application layers.</p>
+      </div>
+
+      <!-- Live Dashboard Main Grid -->
+      <div class="dashboard-main-grid fade-in fade-in-delay-1">
         
-        <!-- Donut Chart -->
-        <div class="chart-card">
-          <h3>Attack Type Breakdown</h3>
-          <div class="donut-container">
-            <div class="donut-chart">
-              <svg viewBox="0 0 140 140" id="donut-svg">
-                <circle cx="70" cy="70" r="55" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="20"/>
-              </svg>
-              <div class="donut-center">
-                <div class="total" id="donut-total">0</div>
-                <div class="total-label">Total</div>
+        <!-- ATTACKER FINGERPRINT TRACKER (Left Side) -->
+        <div class="tracker-panel">
+          <div class="tracker-header">
+            <span class="tracker-title">
+              <span class="blinking-dot"></span>
+              ATTACKER PROFILE
+            </span>
+          </div>
+          
+          <div class="tracker-body">
+            <div class="tracker-label">FINGERPRINT ID:</div>
+            <div class="tracker-id" id="tracker-fingerprint">A7F...3B2</div>
+            
+            <div class="tracker-stats-row">
+              <div class="tracker-stat">
+                <div class="tracker-label">ATTEMPT COUNT</div>
+                <div class="tracker-value" id="tracker-attempts">0</div>
+              </div>
+              <div class="tracker-stat">
+                <div class="tracker-label">TARGET ZONE</div>
+                <div class="tracker-value amber">/api/v1/auth</div>
               </div>
             </div>
-            <div class="donut-legend" id="donut-legend"></div>
+
+            <div class="tracker-label">ATTACK VECTORS USED:</div>
+            <div class="tracker-badges" id="tracker-vectors">
+              <!-- Animated badges will be inserted here -->
+            </div>
+
+            <div class="tracker-timestamps">
+              <div class="tracker-label">FIRST SEEN: <span id="tracker-first">--:--:--</span></div>
+              <div class="tracker-label">LAST SEEN: <span id="tracker-last">--:--:--</span></div>
+            </div>
+
+            <div class="tracker-risk">
+              <div class="tracker-label" style="display:flex; justify-content: space-between;">
+                <span>RISK LEVEL</span>
+                <span id="tracker-risk-lbl" class="threat-red">CRITICAL</span>
+              </div>
+              <div class="risk-bar-container">
+                <div class="risk-bar-fill" id="tracker-risk-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="tracker-status">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              BEING MONITORED
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Incident Log -->
-      <div style="max-width: 1200px;">
-        <h3 style="font-family: var(--font-mono); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-          <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--safe-green); box-shadow: 0 0 8px var(--safe-green); animation: dot-pulse 1.5s ease infinite;"></span>
-          Incident Log
-        </h3>
-        
-        <div class="log-filters">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="fgsm">FGSM</button>
-          <button class="filter-btn" data-filter="pgd">PGD</button>
-          <button class="filter-btn" data-filter="patch">Patch</button>
-          <button class="filter-btn" data-filter="unknown">Unknown</button>
-        </div>
+        <!-- LIVE LOG FEED (Right Side) -->
+        <div class="log-feed-panel">
+          <div class="log-feed-header">
+            <div class="panel-title" style="margin: 0;">
+              <div class="indicator"></div>
+              LIVE SECURITY LOG
+            </div>
+            <div class="log-counter">
+              TOTAL BLOCKED TODAY: <span id="total-blocked-val" class="threat-red" style="font-weight: 700; font-size: 16px;">24,801</span>
+            </div>
+          </div>
 
-        <div class="event-log" style="margin-top: 0;">
-          <div style="overflow-x: auto;">
-            <table class="log-table">
+          <div class="log-table-wrapper">
+            <table class="live-log-table">
               <thead>
                 <tr>
-                  <th>Timestamp</th>
-                  <th>Attack Type</th>
-                  <th>Severity</th>
-                  <th>Status</th>
-                  <th>Source</th>
-                  <th>Fingerprint</th>
+                  <th>TIMESTAMP</th>
+                  <th>SOURCE IP / ID</th>
+                  <th>ATTACK TYPE</th>
+                  <th>ACTION TAKEN</th>
+                  <th>FINGERPRINT ID</th>
+                  <th style="text-align: right;">RESPONSE TIME</th>
                 </tr>
               </thead>
-              <tbody id="dashboard-log-body">
+              <tbody id="live-log-body">
+                <!-- Rows auto generated -->
               </tbody>
             </table>
           </div>
         </div>
+
       </div>
     </div>
   `;

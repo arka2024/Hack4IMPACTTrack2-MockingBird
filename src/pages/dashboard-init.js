@@ -1,317 +1,172 @@
-import { animateCounter } from '../animations.js';
-
 export function initDashboardPage() {
-  // Animate KPIs
-  setTimeout(() => {
-    const atk = document.getElementById('kpi-attacks-value');
-    const hp = document.getElementById('kpi-honeypot-value');
-    const resp = document.getElementById('kpi-response-value');
-    const conf = document.getElementById('kpi-confidence-value');
+  const tableBody = document.getElementById('live-log-body');
+  if (!tableBody) return;
 
-    if (atk) animateCounter(atk, 2847, 2000);
-    if (hp) animateCounter(hp, 186, 1800);
-    if (resp) animateCounter(resp, 12, 1500);
-    if (conf) {
-      let val = 0;
-      const interval = setInterval(() => {
-        val += 1.5;
-        if (val >= 99.2) { val = 99.2; clearInterval(interval); }
-        conf.textContent = val.toFixed(1) + '%';
-      }, 30);
-    }
-  }, 300);
+  const totalBlockedEl = document.getElementById('total-blocked-val');
+  let totalBlocked = 24801;
 
-  // Render line chart
-  renderLineChart();
-
-  // Render donut chart
-  renderDonutChart();
-
-  // Populate incident log
-  populateIncidentLog();
-
-  // Filter buttons
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      filterLog(btn.dataset.filter);
-    });
-  });
-
-  // Live update simulation
-  setInterval(() => {
-    addLiveIncident();
-  }, 5000);
-}
-
-function renderLineChart() {
-  const canvas = document.getElementById('threat-line-chart');
-  if (!canvas) return;
+  // Tracker Elements
+  const trackerAttemptsEl = document.getElementById('tracker-attempts');
+  const trackerFirstEl = document.getElementById('tracker-first');
+  const trackerLastEl = document.getElementById('tracker-last');
+  const trackerRiskFill = document.getElementById('tracker-risk-fill');
+  const trackerRiskLbl = document.getElementById('tracker-risk-lbl');
+  const trackerVectorsEl = document.getElementById('tracker-vectors');
   
-  const ctx = canvas.getContext('2d');
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width * 2;
-  canvas.height = rect.height * 2;
-  ctx.scale(2, 2);
-  const W = rect.width;
-  const H = rect.height;
+  let targetAttackerAttempts = 6;
+  let targetAttackerFirstSeen = '16:04:12.804'; // Simulated earlier time
+  const targetFingerprint = 'A7F...3B2';
+  const targetVectors = new Set(['PGD', 'CW', 'Boundary']);
 
-  // Generate data points
-  const points = [];
-  for (let i = 0; i < 24; i++) {
-    points.push({
-      x: (i / 23) * W,
-      y: H - (Math.random() * 60 + 20 + Math.sin(i * 0.5) * 30) / 100 * H
-    });
-  }
+  const attackTypes = ['FGSM', 'PGD', 'CW', 'DeepFool', 'Patch', 'JSMA', 'Boundary'];
+  const actions = [
+    { text: 'BLOCKED', color: 'red' },
+    { text: 'HONEYPOT', color: 'amber' },
+    { text: 'REVIEW', color: 'amber' },
+    { text: 'PASSED', color: 'green' }
+  ];
+  const fingerprints = [targetFingerprint, 'C2B...9A1', 'E9D...4F5', 'B8A...1C3'];
+  const sources = ['Cam-NY-01', 'API-Gateway-EU', 'Device-XYZ', 'Cam-LDN-05'];
 
-  let animProgress = 0;
+  function addLogEntry(forceHitTarget = false) {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' }) + '.' + now.getMilliseconds().toString().padStart(3, '0');
+    
+    // Attack type
+    const attackIdx = Math.floor(Math.random() * attackTypes.length);
+    const attackType = attackTypes[attackIdx];
 
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    animProgress = Math.min(animProgress + 0.02, 1);
-
-    // Grid lines
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i < 5; i++) {
-      const y = (i / 4) * H;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
-    }
-    for (let i = 0; i < 24; i++) {
-      const x = (i / 23) * W;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, H);
-      ctx.stroke();
+    // Higher chance (40%) to hit the target attacker
+    const isTarget = forceHitTarget || Math.random() < 0.4;
+    const fpId = isTarget ? targetFingerprint : fingerprints[Math.floor(Math.random() * fingerprints.length)];
+    
+    // Action (CLEAN is rare, mostly attacks)
+    const isAttack = forceHitTarget || Math.random() < 0.85;
+    let action;
+    if (isAttack) {
+      action = actions[Math.floor(Math.random() * 3)]; // Blocked, honeypot, review
+      totalBlocked++;
+      if (totalBlockedEl) totalBlockedEl.textContent = totalBlocked.toLocaleString();
+    } else {
+      action = actions[3]; // Passed
     }
 
-    // Y-axis labels
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.font = '10px JetBrains Mono';
-    for (let i = 0; i <= 4; i++) {
-      ctx.fillText((100 - i * 25) + '', 2, (i / 4) * H + 12);
+    const source = sources[Math.floor(Math.random() * sources.length)];
+    const responseTime = Math.floor(Math.random() * 12) + 4; // 4-15ms
+
+    // Create row
+    const tr = document.createElement('tr');
+    tr.className = 'log-row log-row-enter';
+    if (action.color === 'red') tr.classList.add('border-red');
+    else if (action.color === 'amber') tr.classList.add('border-amber');
+    else tr.classList.add('border-green');
+
+    tr.innerHTML = `
+      <td>${timeStr}</td>
+      <td>${source}</td>
+      <td><span class="badge ${isAttack ? 'badge-danger' : 'badge-safe'}">${isAttack ? attackType : 'NONE'}</span></td>
+      <td style="color: var(--${action.color === 'red' ? 'threat-red' : action.color === 'amber' ? 'warning-amber' : 'safe-green'}); font-weight: 700;">${action.text}</td>
+      <td style="color: #94A3B8;">${fpId}</td>
+      <td style="text-align: right; color: var(--info-blue);">${responseTime}ms</td>
+    `;
+    
+    tableBody.prepend(tr);
+
+    // Remove older rows (keep 8 max)
+    if (tableBody.children.length > 8) {
+      const last = tableBody.lastElementChild;
+      last.classList.remove('log-row-enter');
+      last.classList.add('log-row-exit');
+      setTimeout(() => {
+        if (last && last.parentNode) last.parentNode.removeChild(last);
+      }, 500);
     }
 
-    // X-axis labels
-    for (let i = 0; i < 24; i += 4) {
-      ctx.fillText(i + 'h', (i / 23) * W, H - 2);
-    }
+    // Tracker update logic
+    if (fpId === targetFingerprint && isAttack) {
+      targetAttackerAttempts++;
+      if (!targetAttackerFirstSeen) {
+        targetAttackerFirstSeen = timeStr;
+        if (trackerFirstEl) trackerFirstEl.textContent = targetAttackerFirstSeen;
+      }
+      
+      if (trackerLastEl) trackerLastEl.textContent = timeStr;
+      if (trackerAttemptsEl) {
+        trackerAttemptsEl.textContent = targetAttackerAttempts;
+        // Pulse effect
+        trackerAttemptsEl.style.transform = 'scale(1.2)';
+        trackerAttemptsEl.style.color = 'var(--threat-red)';
+        setTimeout(() => {
+          trackerAttemptsEl.style.transform = 'scale(1)';
+          trackerAttemptsEl.style.color = 'white';
+        }, 300);
+      }
 
-    // Draw filled area
-    const drawPoints = Math.ceil(points.length * animProgress);
-    if (drawPoints > 1) {
-      // Area fill
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, H);
-      for (let i = 0; i < drawPoints; i++) {
-        if (i === 0) {
-          ctx.lineTo(points[i].x, points[i].y);
-        } else {
-          const cx = (points[i - 1].x + points[i].x) / 2;
-          ctx.quadraticCurveTo(points[i - 1].x, points[i - 1].y, cx, (points[i - 1].y + points[i].y) / 2);
-          if (i === drawPoints - 1) {
-            ctx.lineTo(points[i].x, points[i].y);
-          }
+      // Add to vectors
+      if (!targetVectors.has(attackType)) {
+        targetVectors.add(attackType);
+        if (trackerVectorsEl) {
+          const badge = document.createElement('span');
+          badge.className = 'vector-badge fade-in visible';
+          badge.textContent = attackType;
+          trackerVectorsEl.appendChild(badge);
         }
       }
-      ctx.lineTo(points[drawPoints - 1].x, H);
-      ctx.closePath();
-      
-      const gradient = ctx.createLinearGradient(0, 0, 0, H);
-      gradient.addColorStop(0, 'rgba(255, 45, 45, 0.15)');
-      gradient.addColorStop(1, 'rgba(255, 45, 45, 0)');
-      ctx.fillStyle = gradient;
-      ctx.fill();
 
-      // Line
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 1; i < drawPoints; i++) {
-        const cx = (points[i - 1].x + points[i].x) / 2;
-        ctx.quadraticCurveTo(points[i - 1].x, points[i - 1].y, cx, (points[i - 1].y + points[i].y) / 2);
+      // Update Risk Bar
+      if (trackerRiskFill && trackerRiskLbl) {
+        const riskPercent = Math.min(100, targetAttackerAttempts * 10);
+        trackerRiskFill.style.width = riskPercent + '%';
+        if (riskPercent < 30) { trackerRiskLbl.textContent = 'LOW'; trackerRiskLbl.className = 'safe-green'; trackerRiskFill.style.background = 'var(--safe-green)'; trackerRiskFill.style.boxShadow = '0 0 10px var(--safe-green)'; }
+        else if (riskPercent < 70) { trackerRiskLbl.textContent = 'ELEVATED'; trackerRiskLbl.className = 'warning-amber'; trackerRiskFill.style.background = 'var(--warning-amber)'; trackerRiskFill.style.boxShadow = '0 0 10px var(--warning-amber)'; }
+        else { trackerRiskLbl.textContent = 'CRITICAL'; trackerRiskLbl.className = 'threat-red'; trackerRiskFill.style.background = 'var(--threat-red)'; trackerRiskFill.style.boxShadow = '0 0 10px var(--threat-red)'; }
       }
-      ctx.strokeStyle = '#FF2D2D';
-      ctx.lineWidth = 2;
-      ctx.shadowColor = '#FF2D2D';
-      ctx.shadowBlur = 8;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      // Points
-      for (let i = 0; i < drawPoints; i++) {
-        ctx.beginPath();
-        ctx.arc(points[i].x, points[i].y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = '#FF2D2D';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 45, 45, 0.3)';
-        ctx.lineWidth = 6;
-        ctx.stroke();
-      }
-    }
-
-    if (animProgress < 1) {
-      requestAnimationFrame(draw);
     }
   }
 
-  draw();
-}
-
-function renderDonutChart() {
-  const svg = document.getElementById('donut-svg');
-  const legend = document.getElementById('donut-legend');
-  const totalEl = document.getElementById('donut-total');
-  if (!svg || !legend) return;
-
-  const data = [
-    { label: 'FGSM', value: 42, color: '#FF2D2D' },
-    { label: 'PGD', value: 28, color: '#FF6B35' },
-    { label: 'Patch Attack', value: 18, color: '#FFB800' },
-    { label: 'Unknown', value: 12, color: '#3B82F6' },
-  ];
-
-  const total = data.reduce((s, d) => s + d.value, 0);
-  const circumference = 2 * Math.PI * 55;
-  let currentOffset = 0;
-
-  // Animate total
-  if (totalEl) animateCounter(totalEl, total, 1500);
-
-  data.forEach((d, i) => {
-    const segmentLength = (d.value / total) * circumference;
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', '70');
-    circle.setAttribute('cy', '70');
-    circle.setAttribute('r', '55');
-    circle.setAttribute('fill', 'none');
-    circle.setAttribute('stroke', d.color);
-    circle.setAttribute('stroke-width', '20');
-    circle.setAttribute('stroke-dasharray', `${segmentLength} ${circumference - segmentLength}`);
-    circle.setAttribute('stroke-dashoffset', `${-currentOffset}`);
-    circle.setAttribute('transform', 'rotate(-90 70 70)');
-    circle.style.transition = `stroke-dasharray 1s ease ${i * 0.2}s`;
-    circle.style.filter = `drop-shadow(0 0 4px ${d.color})`;
-    svg.appendChild(circle);
-
-    currentOffset += segmentLength;
-
-    // Legend
-    legend.innerHTML += `
-      <div class="legend-item">
-        <span class="legend-color" style="background: ${d.color};"></span>
-        <span class="legend-label">${d.label}</span>
-        <span class="legend-value">${d.value}%</span>
-      </div>
-    `;
-  });
-}
-
-function populateIncidentLog() {
-  const tbody = document.getElementById('dashboard-log-body');
-  if (!tbody) return;
-
-  const incidents = generateIncidents(15);
-  incidents.forEach(inc => {
-    tbody.appendChild(createIncidentRow(inc));
-  });
-}
-
-function generateIncidents(count) {
-  const types = ['FGSM', 'PGD', 'Patch Attack', 'CW L2', 'DeepFool', 'Unknown'];
-  const severities = ['Critical', 'High', 'Medium', 'Low'];
-  const statuses = ['Blocked', 'Quarantined', 'Analyzing', 'Mitigated'];
-  const sources = ['External API', 'Model Input', 'Batch Pipeline', 'Edge Sensor', 'Direct Upload'];
+  // Initial tracker render
+  if (trackerFirstEl) trackerFirstEl.textContent = targetAttackerFirstSeen;
+  if (trackerLastEl) trackerLastEl.textContent = '16:04:12.804'; // mocked
+  if (trackerAttemptsEl) trackerAttemptsEl.textContent = targetAttackerAttempts.toString();
   
-  const incidents = [];
-  const now = Date.now();
-
-  for (let i = 0; i < count; i++) {
-    const time = new Date(now - i * 180000 - Math.random() * 60000);
-    incidents.push({
-      timestamp: time.toLocaleTimeString('en-US', { hour12: false }) + '.' + String(time.getMilliseconds()).padStart(3, '0'),
-      type: types[Math.floor(Math.random() * types.length)],
-      severity: severities[Math.floor(Math.random() * severities.length)],
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      source: sources[Math.floor(Math.random() * sources.length)],
-      fingerprint: '0x' + Math.random().toString(16).slice(2, 10).toUpperCase(),
+  if (trackerVectorsEl) {
+    trackerVectorsEl.innerHTML = '';
+    targetVectors.forEach(v => {
+      const badge = document.createElement('span');
+      badge.className = 'vector-badge fade-in visible';
+      badge.textContent = v;
+      trackerVectorsEl.appendChild(badge);
     });
   }
-  return incidents;
-}
 
-function createIncidentRow(inc) {
-  const row = document.createElement('tr');
-  
-  const isAttack = inc.severity === 'Critical' || inc.severity === 'High';
-  if (isAttack) row.className = 'attack-row';
-
-  const severityColors = {
-    'Critical': 'detected',
-    'High': 'detected',
-    'Medium': 'pending',
-    'Low': 'blocked'
-  };
-
-  const statusColors = {
-    'Blocked': 'blocked',
-    'Quarantined': 'detected',
-    'Analyzing': 'pending',
-    'Mitigated': 'blocked'
-  };
-
-  row.innerHTML = `
-    <td>${inc.timestamp}</td>
-    <td>${inc.type}</td>
-    <td><span class="status-badge ${severityColors[inc.severity]}">${inc.severity}</span></td>
-    <td><span class="status-badge ${statusColors[inc.status]}">${inc.status}</span></td>
-    <td>${inc.source}</td>
-    <td style="font-family: var(--font-mono); font-size: 11px;">${inc.fingerprint}</td>
-  `;
-  
-  row.dataset.type = inc.type.toLowerCase().replace(' ', '-');
-  return row;
-}
-
-function addLiveIncident() {
-  const tbody = document.getElementById('dashboard-log-body');
-  if (!tbody) return;
-
-  const incidents = generateIncidents(1);
-  const row = createIncidentRow(incidents[0]);
-  row.style.animation = 'row-flash 2s ease';
-  tbody.insertBefore(row, tbody.firstChild);
-
-  // Keep max 20 rows
-  while (tbody.children.length > 20) {
-    tbody.removeChild(tbody.lastChild);
+  if (trackerRiskFill && trackerRiskLbl) {
+    const riskPercent = Math.min(100, targetAttackerAttempts * 10);
+    trackerRiskFill.style.width = riskPercent + '%';
+    if (riskPercent < 30) { trackerRiskLbl.textContent = 'LOW'; trackerRiskLbl.className = 'safe-green'; trackerRiskFill.style.background = 'var(--safe-green)'; trackerRiskFill.style.boxShadow = '0 0 10px var(--safe-green)'; }
+    else if (riskPercent < 70) { trackerRiskLbl.textContent = 'ELEVATED'; trackerRiskLbl.className = 'warning-amber'; trackerRiskFill.style.background = 'var(--warning-amber)'; trackerRiskFill.style.boxShadow = '0 0 10px var(--warning-amber)'; }
+    else { trackerRiskLbl.textContent = 'CRITICAL'; trackerRiskLbl.className = 'threat-red'; trackerRiskFill.style.background = 'var(--threat-red)'; trackerRiskFill.style.boxShadow = '0 0 10px var(--threat-red)'; }
   }
 
-  // Update attacks counter
-  const atkVal = document.getElementById('kpi-attacks-value');
-  if (atkVal) {
-    const current = parseInt(atkVal.textContent.replace(/,/g, '')) || 2847;
-    atkVal.textContent = (current + 1).toLocaleString();
+  // Generate initial rows (not forcibly target)
+  for (let i = 0; i < 5; i++) {
+    addLogEntry(false);
   }
-}
 
-function filterLog(filter) {
-  const rows = document.querySelectorAll('#dashboard-log-body tr');
-  rows.forEach(row => {
-    if (filter === 'all') {
-      row.style.display = '';
-    } else {
-      const type = row.dataset.type || '';
-      if (type.includes(filter)) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
+  let ticks = 0;
+  // Interval
+  let interval = setInterval(() => {
+    // Check if we are still on dashboard page, if not, clear interval
+    if (!document.getElementById('live-log-body')) {
+      clearInterval(interval);
+      return;
     }
-  });
+    
+    ticks++;
+    // Force hit on tick 1 or every 5th tick to make a great demo loop
+    if (ticks === 1 || ticks % 5 === 0) {
+      addLogEntry(true);
+    } else {
+      addLogEntry(false);
+    }
+  }, 3000);
 }

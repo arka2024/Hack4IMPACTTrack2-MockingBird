@@ -5,13 +5,6 @@ export function renderLoginPage() {
       <canvas id="login-bg-canvas"></canvas>
       
       <div class="login-container">
-        <!-- Animated cyber rings behind card -->
-        <div class="login-rings">
-          <div class="ring ring-1"></div>
-          <div class="ring ring-2"></div>
-          <div class="ring ring-3"></div>
-        </div>
-
         <div class="login-card" id="login-card">
           <!-- Top security bar -->
           <div class="login-security-bar">
@@ -21,7 +14,7 @@ export function renderLoginPage() {
           </div>
 
           <div class="login-header">
-            <!-- Animated shield icon -->
+            <!-- Animated shield icon without radar circles -->
             <div class="login-shield-container">
               <svg class="login-shield-svg" viewBox="0 0 64 72" fill="none">
                 <path class="shield-outer" d="M32 4L4 16v16c0 18 11.7 34.8 28 39.5C49.3 66.8 60 50 60 32V16L32 4z" 
@@ -29,13 +22,7 @@ export function renderLoginPage() {
                 <path class="shield-inner" d="M32 14L12 24v10c0 12.5 8.3 24.2 20 27.3 11.7-3.1 20-14.8 20-27.3V24L32 14z" 
                       fill="rgba(255,45,45,0.08)" stroke="#FF2D2D" stroke-width="0.8"/>
                 <circle cx="32" cy="32" r="5" fill="#FF2D2D" opacity="0.8"/>
-                <circle cx="32" cy="32" r="9" stroke="#FF2D2D" stroke-width="0.6" fill="none" opacity="0.4">
-                  <animateTransform attributeName="transform" type="rotate" values="0 32 32;360 32 32" dur="8s" repeatCount="indefinite"/>
-                </circle>
-                <line x1="32" y1="20" x2="32" y2="44" stroke="#FF2D2D" stroke-width="0.8" opacity="0.25"/>
-                <line x1="20" y1="32" x2="44" y2="32" stroke="#FF2D2D" stroke-width="0.8" opacity="0.25"/>
               </svg>
-              <div class="shield-scan-ring"></div>
             </div>
 
             <h2>ACCESS TERMINAL</h2>
