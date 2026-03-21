@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdversaGuard AI — Real World Use Cases</title>
+  <meta name="description" content="Built for India, ready for the world. Real-world AI safety use cases and the Tesla attack story.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/src/cases.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="hex-grid-bg"></div>
+  <div class="scan-line"></div>
+  <div id="ticker"></div>
+  <div id="navbar"></div>
+
+  <div class="page-content">
+    <!-- Hero -->
+    <section class="cases-hero" id="tesla">
+      <div class="section-label animate-up">REAL WORLD IMPACT</div>
+      <h1 class="page-title animate-up">Built for India. Ready for the World.</h1>
+      <p class="body-text animate-up" style="max-width:580px;margin:16px auto 0;text-align:center">AI is already making life-changing decisions about millions of people — with zero adversarial protection. Until now.</p>
+    </section>
+
+    <!-- Tesla Story -->
+    <section class="tesla-section">
+      <div class="tesla-inner">
+        <h2 class="page-title animate-up" style="text-align:center;font-size:clamp(28px,4vw,44px);margin-bottom:8px">The Attack That Changed Everything</h2>
+        <p class="body-text animate-up" style="text-align:center;max-width:600px;margin:0 auto 40px">McAfee Researchers, 2020. A piece of tape. Zero network access. Near-fatal acceleration.</p>
+        <div class="stepper-pills animate-up" id="stepperPills">
+          <button class="sp active" onclick="goStep(0)">1 The Attack</button>
+          <button class="sp" onclick="goStep(1)">2 Tesla Missed It</button>
+          <button class="sp" onclick="goStep(2)">3 The Danger</button>
+          <button class="sp" onclick="goStep(3)">4 AdversaGuard</button>
+          <button class="sp" onclick="goStep(4)">5 The Impact</button>
+        </div>
+        <div class="step-panels">
+          <div class="step-panel active" id="panel0">
+            <div class="sp-grid">
+              <div class="sp-visual"><div class="road-scene"><div class="road-line"></div><div class="stop-sign">STOP<div class="tape-strip"></div></div><div class="car-icon">🚗</div></div></div>
+              <div class="sp-text"><h3>The 5-Rupee Attack</h3><p>In 2020, McAfee researchers placed a small strip of black tape on a 35 mph speed limit sign. Tesla's MobilEye camera system read it as 85 mph — and the car accelerated dangerously.</p><div class="sp-stats"><div class="sp-stat"><span class="data-value" style="color:var(--red)">₹5</span><span>Cost of attack</span></div><div class="sp-stat"><span class="data-value" style="color:var(--amber)">30 sec</span><span>Time to execute</span></div><div class="sp-stat"><span class="data-value" style="color:var(--purple)">NONE</span><span>Network access needed</span></div></div></div>
+            </div>
+          </div>
+          <div class="step-panel" id="panel1">
+            <div class="sp-grid">
+              <div class="sp-compare"><div class="sp-col"><h4 style="color:var(--green)">Tesla's Security Stack</h4><div class="sp-check green">✓ Network encryption</div><div class="sp-check green">✓ OTA signing</div><div class="sp-check green">✓ CAN bus authentication</div><div class="sp-check green">✓ Secure boot</div><div class="sp-check green">✓ API rate limiting</div></div><div class="sp-col"><h4 style="color:var(--red)">Protected Against Adversarial?</h4><div class="sp-check red">✗ Camera input validation</div><div class="sp-check red">✗ Physical patch detection</div><div class="sp-check red">✗ Physics plausibility check</div><div class="sp-check red">✗ Adversarial perturbation scan</div><div class="sp-check red">✗ Temporal consistency check</div></div></div>
+              <p class="sp-quote">"The firewall protects the pipe. Not the brain reading it."</p>
+            </div>
+          </div>
+          <div class="step-panel" id="panel2">
+            <div class="sp-timeline-wrap"><div class="sp-tl"><div class="sp-tl-event"><span class="sp-tl-time" style="color:var(--red)">0ms</span><span class="sp-tl-desc">Tape placed on sign</span></div><div class="sp-tl-event"><span class="sp-tl-time" style="color:var(--red)">16ms</span><span class="sp-tl-desc">Camera reads modified sign</span></div><div class="sp-tl-event"><span class="sp-tl-time" style="color:var(--red)">18ms</span><span class="sp-tl-desc">Model outputs "85 mph" with 97% confidence</span></div><div class="sp-tl-event"><span class="sp-tl-time" style="color:var(--red)">Ongoing</span><span class="sp-tl-desc">Vehicle accelerates to dangerous speed</span></div></div><p class="sp-quote" style="color:var(--red)">$0 attack cost. Human cost: potentially fatal.</p></div>
+          </div>
+          <div class="step-panel" id="panel3">
+            <div class="sp-timeline-wrap"><div class="sp-tl"><div class="sp-tl-event"><span class="sp-tl-time" style="color:var(--green)">2ms</span><span class="sp-tl-desc">AdversaGuard detects pixel anomaly</span></div><div class="sp-tl-event"><span class="sp-tl-time" style="color:var(--green)">5ms</span><span class="sp-tl-desc">Physics checker flags 85mph in residential</span></div><div class="sp-tl-event"><span class="sp-tl-time" style="color:var(--green)">6ms</span><span class="sp-tl-desc">Attack confirmed — input blocked</span></div><div class="sp-tl-event"><span class="sp-tl-time" style="color:var(--green)">8ms</span><span class="sp-tl-desc">Incident logged — EU AI Act report ready</span></div></div><p class="sp-quote" style="color:var(--green)">8ms total. Attack neutralised before the model ever saw it.</p></div>
+          </div>
+          <div class="step-panel" id="panel4">
+            <div style="text-align:center;padding:40px 0"><div class="data-value" style="font-size:48px;color:var(--red)">5,000,000+</div><p style="font-family:var(--font-display);font-size:20px;font-weight:600;margin:8px 0">Tesla vehicles worldwide</p><p class="body-text" style="max-width:400px;margin:8px auto 24px">All currently unprotected at the vision layer. Every single one is vulnerable to the same attack.</p><a href="demo.html" class="btn btn-primary">See how AdversaGuard protects them →</a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- India Use Cases -->
+    <section class="section" id="india">
+      <div class="section-label animate-up" style="text-align:center">IMPACT IN INDIA</div>
+      <h2 class="page-title animate-up" style="text-align:center;margin-bottom:48px">Where Lives Depend On It</h2>
+      <div class="cases-grid animate-up stagger-children">
+        <div class="card case-card" style="border-top:6px solid var(--red)">
+          <span class="case-tag" style="color:var(--red);background:#FF2D2D12;border:1px solid #FF2D2D33">TRAFFIC ENFORCEMENT</span>
+          <h3 class="card-title" style="margin:12px 0 8px">2M Plates. Zero Adversarial Protection.</h3>
+          <p class="body-text" style="font-size:14px">Delhi's automatic number plate recognition (ANPR) cameras read over 2 million plates daily for traffic enforcement and stolen vehicle detection. A Rs.2 piece of tape on a license plate can make it invisible to the AI — rendering the entire enforcement system useless.</p>
+          <div class="case-stat" style="border-color:var(--red);background:#FF2D2D08"><span class="data-value" style="color:var(--red);font-size:24px">2,000,000+</span><span class="body-text" style="font-size:12px">plates read daily without adversarial screening</span></div>
+        </div>
+        <div class="card case-card" style="border-top:6px solid var(--amber)">
+          <span class="case-tag" style="color:var(--amber);background:#FFB80012;border:1px solid #FFB80033">HEALTHCARE AI</span>
+          <h3 class="card-title" style="margin:12px 0 8px">Misdiagnosis Kills. We Prevent It.</h3>
+          <p class="body-text" style="font-size:14px">India's TB detection AI screens millions of chest X-rays annually. A targeted adversarial perturbation can make a TB-positive scan appear clean — letting the patient walk away untreated, spreading the disease to others. AdversaGuard catches these attacks in 8ms.</p>
+          <div class="case-stat" style="border-color:var(--amber);background:#FFB80008"><span class="data-value" style="color:var(--amber);font-size:24px">2,800,000</span><span class="body-text" style="font-size:12px">TB cases in India annually</span></div>
+        </div>
+        <div class="card case-card" style="border-top:6px solid var(--purple)">
+          <span class="case-tag" style="color:var(--purple);background:#6366F112;border:1px solid #6366F133">SURVEILLANCE AI</span>
+          <h3 class="card-title" style="margin:12px 0 8px">5 Cities. Millions of Unprotected Faces.</h3>
+          <p class="body-text" style="font-size:14px">India's facial recognition systems deployed across 5 major cities process millions of faces daily. Research shows that adversarial glasses can fool these systems into misidentifying individuals, enabling criminals to walk past security undetected.</p>
+          <div class="case-stat" style="border-color:var(--purple);background:#6366F108"><span class="data-value" style="color:var(--purple);font-size:24px">5</span><span class="body-text" style="font-size:12px">Indian cities with unprotected face AI</span></div>
+        </div>
+        <div class="card case-card" style="border-top:6px solid var(--green)">
+          <span class="case-tag" style="color:var(--green);background:#00FF8812;border:1px solid #00FF8833">CRITICAL INFRASTRUCTURE</span>
+          <h3 class="card-title" style="margin:12px 0 8px">67,000km of Track. AI Checks Every Meter.</h3>
+          <p class="body-text" style="font-size:14px">Indian Railways uses AI camera systems to detect track cracks and defects across 67,000km of track. An adversarial attack could make a critical crack invisible to the AI, leading to a derailment carrying thousands of passengers.</p>
+          <div class="case-stat" style="border-color:var(--green);background:#00FF8808"><span class="data-value" style="color:var(--green);font-size:24px">23,000,000</span><span class="body-text" style="font-size:12px">daily passengers depend on this</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EU AI Act Compliance -->
+    <section class="section">
+      <div class="card compliance-card animate-up">
+        <div class="comp-layout">
+          <div class="comp-left">
+            <h2 class="page-title" style="font-size:clamp(24px,3vw,36px);margin-bottom:12px">One Report. Full Compliance.</h2>
+            <p class="body-text" style="margin-bottom:24px">After every incident, AdversaGuard auto-generates a structured PDF report that satisfies EU AI Act Article 9 documentation requirements — in under 2 seconds.</p>
+            <div class="comp-checks" id="compChecks">
+              <div class="cc animate-up"><span style="color:var(--green)">✓</span> Article 6 — Risk Classification</div>
+              <div class="cc animate-up" style="transition-delay:.1s"><span style="color:var(--green)">✓</span> Article 9 — Risk Management System</div>
+              <div class="cc animate-up" style="transition-delay:.2s"><span style="color:var(--green)">✓</span> Article 13 — Transparency & Logging</div>
+              <div class="cc animate-up" style="transition-delay:.3s"><span style="color:var(--green)">✓</span> Article 14 — Human Oversight</div>
+              <div class="cc animate-up" style="transition-delay:.4s"><span style="color:var(--green)">✓</span> Article 62 — Incident Reporting</div>
+            </div>
+          </div>
+          <div class="comp-right">
+            <div class="mock-pdf">
+              <div class="pdf-header">INCIDENT REPORT — EU AI ACT ARTICLE 9</div>
+              <div class="pdf-body">
+                <div class="pdf-row"><span>Incident ID:</span><span>INC-7F3A2B</span></div>
+                <div class="pdf-row"><span>Timestamp:</span><span>2025-01-15 14:32:11 UTC</span></div>
+                <div class="pdf-row"><span>Attack Type:</span><span>FGSM Patch</span></div>
+                <div class="pdf-row"><span>Threat Score:</span><span>87/100</span></div>
+                <div class="pdf-row"><span>Action:</span><span>BLOCKED</span></div>
+                <div class="pdf-row"><span>Detection Time:</span><span>8ms</span></div>
+                <div class="pdf-row"><span>Layers Flagged:</span><span>5/7</span></div>
+              </div>
+              <div class="pdf-stamp">COMPLIANT</div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;margin-top:16px;justify-content:center" onclick="generatePDF()">Generate Sample Report</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="footer"></div>
+
+  <script type="module">
+    import { getThreatTickerHTML, getNavbarHTML, getFooterHTML, initScrollAnimations, initCardTilt } from '/src/shared.js';
+    document.getElementById('ticker').innerHTML = getThreatTickerHTML();
+    document.getElementById('navbar').innerHTML = getNavbarHTML('cases');
+    document.getElementById('footer').innerHTML = getFooterHTML();
+    setTimeout(() => { initScrollAnimations(); initCardTilt(); }, 100);
+  </script>
+  <script>
+    // Tesla stepper
+    function goStep(idx) {
+      document.querySelectorAll('.sp').forEach((b, i) => b.classList.toggle('active', i === idx));
+      document.querySelectorAll('.step-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+    }
+    window.goStep = goStep;
+
+    // PDF generation
+    function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFillColor(255, 45, 45);
+      doc.rect(0, 0, 210, 20, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(14);
+      doc.text('AdversaGuard AI — EU AI Act Incident Report', 14, 13);
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(11);
+      let y = 35;
+      const lines = [
+        'INCIDENT REPORT — EU AI ACT ARTICLE 9',
+        '',
+        'Incident ID: INC-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+        'Timestamp: ' + new Date().toISOString(),
+        'System: AdversaGuard AI v2.0',
+        '',
+        'Threat Assessment:',
+        '  Threat Score: 87/100',
+        '  Attack Type: FGSM Patch',
+        '  Action Taken: BLOCKED',
+        '  Detection Time: 8ms',
+        '  Confidence: 92%',
+        '',
+        'Detection Layer Results:',
+        '  Pixel Statistics: 17/20',
+        '  Frequency Analysis: 18/20',
+        '  Local Variance: 16/20',
+        '  Edge Consistency: 19/20',
+        '  Confidence Anomaly: 17/20',
+        '',
+        'EU AI Act Compliance:',
+        '  Article 6 — Risk Classification: COMPLIANT',
+        '  Article 9 — Risk Management: COMPLIANT',
+        '  Article 13 — Transparency: COMPLIANT',
+        '  Article 14 — Human Oversight: COMPLIANT',
+        '  Article 62 — Incident Reporting: COMPLIANT',
+        '',
+        'Status: FULLY COMPLIANT',
+        '',
+        'Generated by AdversaGuard AI · adversaguard.ai',
+      ];
+      lines.forEach(l => { doc.text(l, 14, y); y += 7; });
+      doc.setTextColor(0, 180, 0);
+      doc.setFontSize(32);
+      doc.text('COMPLIANT', 120, 160, { angle: 15 });
+      doc.save('AdversaGuard-EU-AI-Act-Report.pdf');
+    }
+    window.generatePDF = generatePDF;
+  </script>
+</body>
+</html>

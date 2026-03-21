@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADVERSAGUARD — AUTHENTICATE</title>
+  <meta name="description" content="Access the AdversaGuard AI defense dashboard.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/src/login.css">
+</head>
+<body>
+  <div class="hex-grid-bg"></div>
+  <div class="scan-line"></div>
+  <div class="floating-particles" id="particles"></div>
+
+  <div class="login-wrapper">
+    <div class="login-left">
+      <div class="login-left-logo"><svg width="24" height="24" viewBox="0 0 32 36" fill="none"><path d="M16 2L3 8v8c0 9 5.4 17.3 13 19.5C23.6 33.3 29 25 29 16V8L16 2z" stroke="#FF2D2D" stroke-width="1.5" fill="rgba(255,45,45,0.08)"/><circle cx="16" cy="17" r="2.5" fill="#FF2D2D"/></svg><span style="font-family:var(--font-display);font-weight:700;font-size:12px;letter-spacing:2px">ADVERSA<span style="color:var(--red)">GUARD</span></span></div>
+      <div class="login-left-center">
+        <div class="login-shield-wrap">
+          <svg width="180" height="180" viewBox="0 0 32 36" fill="none" style="animation:shieldBreathe 2.5s ease infinite;filter:drop-shadow(0 0 30px #FF2D2D33)">
+            <path d="M16 2L3 8v8c0 9 5.4 17.3 13 19.5C23.6 33.3 29 25 29 16V8L16 2z" stroke="#FF2D2D" stroke-width="1" fill="rgba(255,45,45,0.06)"/>
+            <path d="M16 8L8 12v4c0 5.2 3.3 10 8 11.5 4.7-1.5 8-6.3 8-11.5v-4L16 8z" fill="rgba(255,45,45,0.12)"/>
+            <circle cx="16" cy="17" r="2.5" fill="#FF2D2D"/>
+          </svg>
+          <div class="ring-wrap"><div class="wr"></div><div class="wr" style="animation-delay:.7s"></div><div class="wr" style="animation-delay:1.4s"></div></div>
+        </div>
+        <h2 class="login-headline">PROTECT EVERY<br>DECISION YOUR <span style="color:var(--red)">AI</span> MAKES</h2>
+        <div class="feature-pills">
+          <div class="feature-pill" style="border-color:#00FF88"><span class="fp-dot" style="background:#00FF88;box-shadow:0 0 6px #00FF88"></span>Real-time adversarial detection</div>
+          <div class="feature-pill" style="border-color:#FFB800"><span class="fp-dot" style="background:#FFB800;box-shadow:0 0 6px #FFB800"></span>Honeypot mode — trace every attacker</div>
+          <div class="feature-pill" style="border-color:#6366F1"><span class="fp-dot" style="background:#6366F1;box-shadow:0 0 6px #6366F1"></span>EU AI Act compliance reports</div>
+        </div>
+      </div>
+      <div class="login-left-bottom"><span class="ticker-dot"></span><span style="font-family:var(--font-mono);font-size:10px;color:var(--text-faint)">12,847 ATTACKS BLOCKED IN THE LAST 24 HOURS</span></div>
+    </div>
+    <div class="login-right">
+      <div class="login-form-card">
+        <div class="form-hud-label">OPERATOR AUTHENTICATION</div>
+        <h1 class="login-title">ACCESS TERMINAL</h1>
+        <p class="login-subtitle">Authenticate to enter the defense dashboard</p>
+        <div class="tab-switcher"><button class="tab active" id="tabSignIn" onclick="switchTab('signin')">SIGN IN</button><button class="tab" id="tabCreate" onclick="switchTab('create')">CREATE ACCOUNT</button></div>
+        <form class="auth-form" id="signinForm" onsubmit="handleSignIn(event)">
+          <div class="field"><label class="input-label">EMAIL ADDRESS</label><input class="input-field" type="email" placeholder="operator@command.mil" required></div>
+          <div class="field"><label class="input-label">PASSWORD</label><div class="password-wrap"><input class="input-field" type="password" placeholder="••••••••••••" id="signinPass" required><button type="button" class="eye-btn" onclick="togglePass('signinPass')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5563" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+          <div class="form-row"><label class="checkbox-wrap"><input type="checkbox"><span style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted)">Remember session</span></label><a href="#" style="font-family:var(--font-mono);font-size:10px;color:var(--red)">Reset access?</a></div>
+          <button class="btn btn-primary btn-full" type="submit" id="signinBtn" style="height:48px;font-size:12px">AUTHENTICATE →</button>
+          <div class="divider"><span>ALTERNATE ACCESS</span></div>
+          <div class="social-row"><button type="button" class="social-btn"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Google</button><button type="button" class="social-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</button></div>
+          <p class="form-footer">No access? <a href="#" onclick="switchTab('create')" style="color:var(--red)">Request clearance →</a></p>
+        </form>
+        <form class="auth-form" id="createForm" style="display:none" onsubmit="handleCreate(event)">
+          <div class="field"><label class="input-label">FULL NAME</label><input class="input-field" placeholder="Your designation" required></div>
+          <div class="field"><label class="input-label">EMAIL</label><input class="input-field" type="email" placeholder="operator@command.mil" required></div>
+          <div class="field"><label class="input-label">PASSWORD</label><div class="password-wrap"><input class="input-field" type="password" placeholder="Create passphrase" id="createPass" required><button type="button" class="eye-btn" onclick="togglePass('createPass')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5563" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+          <div class="field"><label class="input-label">CONFIRM PASSWORD</label><input class="input-field" type="password" placeholder="Confirm passphrase" required></div>
+          <div class="field"><label class="input-label">OPERATOR ROLE</label><select class="input-field"><option value="">Select classification...</option><option>Security Engineer</option><option>AI Researcher</option><option>System Operator</option><option>Compliance Officer</option><option>Other</option></select></div>
+          <label class="checkbox-wrap" style="margin-top:4px"><input type="checkbox" required><span style="font-family:var(--font-mono);font-size:10px;color:var(--text-faint)">I accept the <a href="#" style="color:var(--red)">Terms of Service</a> and <a href="#" style="color:var(--red)">Privacy Protocol</a></span></label>
+          <button class="btn btn-primary btn-full" type="submit" id="createBtn" style="margin-top:12px;height:48px;font-size:12px">CREATE ACCOUNT →</button>
+        </form>
+        <div class="security-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4B5563" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span>AES-256 ENCRYPTED · SOC 2 · EU AI ACT READY</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const pc=document.getElementById('particles');for(let i=0;i<20;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=(50+Math.random()*50)+'%';p.style.animationDuration=(3+Math.random()*3)+'s';p.style.animationDelay=Math.random()*5+'s';pc.appendChild(p)}
+    function switchTab(t){document.getElementById('signinForm').style.display=t==='signin'?'flex':'none';document.getElementById('createForm').style.display=t==='create'?'flex':'none';document.getElementById('tabSignIn').classList.toggle('active',t==='signin');document.getElementById('tabCreate').classList.toggle('active',t==='create')}
+    function togglePass(id){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password'}
+    function handleSignIn(e){e.preventDefault();const b=document.getElementById('signinBtn');b.innerHTML='<span class="spinner"></span>AUTHENTICATING...';b.disabled=true;sessionStorage.setItem('adversa_auth', 'true');setTimeout(()=>window.location.href='index.html',1500)}
+    function handleCreate(e){e.preventDefault();const b=document.getElementById('createBtn');b.innerHTML='<span class="spinner"></span>CREATING ACCESS...';b.disabled=true;sessionStorage.setItem('adversa_auth', 'true');setTimeout(()=>window.location.href='index.html',1500)}
+  </script>
+</body>
+</html>

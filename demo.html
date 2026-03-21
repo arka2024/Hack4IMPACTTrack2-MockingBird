@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADVERSAGUARD — LIVE ADVERSARIAL DEMO</title>
+  <meta name="description" content="See AdversaGuard AI defend in real-time. Live webcam adversarial attack detection.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/src/demo.css">
+</head>
+<body>
+  <div class="hex-grid-bg"></div>
+  <div class="scan-line"></div>
+  <div id="ticker"></div>
+  <div id="navbar"></div>
+
+  <div class="page-content">
+    <!-- Demo Header -->
+    <div class="demo-hero">
+      <div class="demo-hero-text">
+        <h1 class="page-title">SEE THE <span style="color:var(--red)" class="glitch" data-text="SHIELD">SHIELD</span> IN ACTION</h1>
+        <p class="body-text" style="max-width:500px;font-size:13px">Upload any image. Watch AdversaGuard detect, decode, and neutralize the attack.</p>
+      </div>
+      <div class="demo-hero-badges">
+        <span class="status-badge green"><span class="sb-dot" style="background:var(--green)"></span>LIVE MONITOR</span>
+        <span class="status-badge" id="honeypotBadge"><span class="sb-dot"></span>HONEYPOT: OFF</span>
+        <span class="status-badge" id="autoBadge"><span class="sb-dot"></span>AUTO-SCAN: OFF</span>
+      </div>
+    </div>
+
+    <!-- 3 Column Demo -->
+    <div class="demo-layout">
+      <!-- LEFT: Input & Controls -->
+      <div class="demo-left">
+        <div class="ctrl-section">
+          <span class="section-label">↑ UPLOAD INPUT — CLEAN OR ADVERSARIAL</span>
+          <button class="btn btn-primary btn-full" id="cameraBtn" onclick="toggleCamera()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>START CAMERA</button>
+          <button class="btn btn-secondary btn-full" id="captureBtn" onclick="captureAndAnalyze()" disabled><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>CAPTURE & ANALYZE</button>
+        </div>
+        <div class="ctrl-divider"></div>
+        <div class="ctrl-section">
+          <span class="section-label">SHIELD SETTINGS</span>
+          <div class="toggle-row"><div><span class="tgl-label">AdversaGuard Shield</span><span class="tgl-desc">Intercepts adversarial inputs</span></div><label class="toggle"><input type="checkbox" id="shieldToggle" checked><span class="slider"></span></label></div>
+          <div class="toggle-row"><div><span class="tgl-label">Honeypot Mode</span><span class="tgl-desc">Returns fake confident answer</span></div><label class="toggle"><input type="checkbox" id="honeypotToggle" onchange="updateHoneypot()"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div><span class="tgl-label">Auto-Analyze (800ms)</span><span class="tgl-desc">Continuous frame analysis</span></div><label class="toggle"><input type="checkbox" id="autoToggle" onchange="toggleAuto()"><span class="slider"></span></label></div>
+          <div class="signal-box">
+            <label for="signalInput" class="tgl-label">Live Text Signal (Objection/Manipulation)</label>
+            <textarea id="signalInput" class="signal-input" rows="3" placeholder="Example: You have no choice, act now and keep this secret."></textarea>
+            <span class="signal-help">Used by live analyzer to detect objection/manipulation and trigger blockage.</span>
+          </div>
+        </div>
+        <div class="ctrl-divider"></div>
+        <div class="ctrl-section">
+          <span class="section-label">ATTACK SCENARIOS (EVIDENCE-BASED)</span>
+          <button class="preset-btn" onclick="runPreset('tape')"><span class="p-dot" style="background:var(--red)"></span><div><span class="p-name">The Tape Attack (2020)</span><span class="p-exp">35mph → 85mph sign</span></div></button>
+          <button class="preset-btn" onclick="runPreset('stickers')"><span class="p-dot" style="background:var(--amber)"></span><div><span class="p-name">Stickers on Road (2019)</span><span class="p-exp">Fake lane injection</span></div></button>
+          <button class="preset-btn" onclick="runPreset('phantom')"><span class="p-dot" style="background:var(--purple)"></span><div><span class="p-name">Phantom Projection</span><span class="p-exp">Billboard attack</span></div></button>
+          <button class="preset-btn" onclick="runPreset('hardware')"><span class="p-dot" style="background:var(--cyan)"></span><div><span class="p-name">Hardware/EM Injection</span><span class="p-exp">Cable/CMOS distortion</span></div></button>
+        </div>
+        <div class="ctrl-divider"></div>
+        <div class="ctrl-section">
+          <span class="section-label">5-LEVEL RESPONSE HIERARCHY</span>
+          <button class="preset-btn" onclick="runPreset('lvl1')"><span class="p-dot" style="background:#4B5563"></span><div><span class="p-name">Level 1: MONITOR (15)</span><span class="p-exp">Silent logging & Watchdog</span></div></button>
+          <button class="preset-btn" onclick="runPreset('lvl2')"><span class="p-dot" style="background:#FFB800"></span><div><span class="p-name">Level 2: RESTRICT (35)</span><span class="p-exp">Block high-stakes decisions</span></div></button>
+          <button class="preset-btn" onclick="runPreset('lvl3')"><span class="p-dot" style="background:#F59E0B"></span><div><span class="p-name">Level 3: DEGRADE (55)</span><span class="p-exp">Confidence mathematically reduced</span></div></button>
+          <button class="preset-btn" onclick="runPreset('lvl4')"><span class="p-dot" style="background:#EF4444"></span><div><span class="p-name">Level 4: TRANSFER (75)</span><span class="p-exp">Camera offline. Failover active.</span></div></button>
+          <button class="preset-btn" onclick="runPreset('lvl5')" style="border:1px solid #FF2D2D44;background:#FF2D2D11"><span class="p-dot" style="background:#FF2D2D;box-shadow:0 0 8px #FF2D2D"></span><div><span class="p-name" style="color:#FF2D2D">Level 5: EMERGENCY STOP</span><span class="p-exp" style="color:#FF2D2D">Immediate full system halt</span></div></button>
+        </div>
+      </div>
+
+      <!-- CENTER: Viewport -->
+      <div class="demo-center">
+        <div class="camera-viewport hud-corners">
+          <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+          <video id="videoFeed" autoplay playsinline muted></video>
+          <canvas id="overlayCanvas"></canvas>
+          <div class="cam-idle" id="camIdle"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg><span>START CAMERA OR SELECT PRESET</span></div>
+        </div>
+        <div class="cam-status-bar"><span id="statusText" style="color:var(--text-faint)">Awaiting input...</span><span id="frameCounter" class="data-value" style="font-size:11px;color:var(--text-faint)">FRAME #0000</span></div>
+        <div id="intelPanel" class="hud-card" style="display:none; margin-top: 20px; width: 100%; max-width: 640px; text-align: left; animation: slideUpFade 0.4s ease;">
+          <div class="ap-header"><span class="ticker-dot"></span><span class="ap-title" id="intelTitle">THREAT INTEL</span></div>
+          <p class="ap-desc" id="intelDesc" style="color:var(--text-muted); font-size:12px; margin-top:8px; line-height: 1.6; font-family: var(--font-body);"></p>
+          <div style="background:#FF2D2D08; border-left:2px solid var(--red); padding:10px 14px; margin-top:14px;">
+            <strong style="color:var(--red); font-size:10px; font-family:var(--font-display); letter-spacing: 1px;">THE BRUTAL FACT:</strong>
+            <p id="intelFact" style="color:#fff; font-size:11px; font-family:var(--font-mono); margin-top:4px; line-height: 1.5;"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Analysis -->
+      <div class="demo-right">
+        <div class="section-label" style="display:flex;justify-content:space-between;align-items:center"><span>AI SHIELD DIAGNOSTICS</span><span class="incident-id" id="incidentId" style="color:var(--text-faint);font-size:9px">—</span></div>
+        <div class="response-mode-badge mode-block" id="responseModeBadge">MODE: BLOCKING</div>
+        <div class="analysis-prediction"><span class="ap-label">AI SEES:</span><span class="ap-value" id="predictionText">Waiting...</span></div>
+        <div class="threat-gauge-wrap"><canvas id="threatGauge" width="160" height="160"></canvas><div class="gauge-center"><span class="gauge-num" id="gaugeNum">0</span><span class="gauge-pct">%</span></div><div class="gauge-label" id="gaugeType">THREAT<br>PATCH</div></div>
+        <div class="conf-bar-wrap"><span class="cb-label">CONFIDENCE</span><span class="cb-val" id="confVal">0%</span><div class="conf-bar"><div class="conf-fill" id="confFill"></div></div></div>
+        <div class="ctrl-divider" style="margin:12px 0"></div>
+        <div class="section-label">DETECTION LAYERS</div>
+        <div class="detection-checks">
+          <div class="check-row"><span class="cr-name">Pixel Statistics</span><span class="cr-score" id="chk0">0/20</span><div class="cr-bar"><div class="cr-fill" id="chkFill0"></div></div></div>
+          <div class="check-row"><span class="cr-name">Frequency Analysis</span><span class="cr-score" id="chk1">0/20</span><div class="cr-bar"><div class="cr-fill" id="chkFill1"></div></div></div>
+          <div class="check-row"><span class="cr-name">Local Variance</span><span class="cr-score" id="chk2">0/20</span><div class="cr-bar"><div class="cr-fill" id="chkFill2"></div></div></div>
+          <div class="check-row"><span class="cr-name">Edge Consistency</span><span class="cr-score" id="chk3">0/20</span><div class="cr-bar"><div class="cr-fill" id="chkFill3"></div></div></div>
+          <div class="check-row"><span class="cr-name">Confidence Anomaly</span><span class="cr-score" id="chk4">0/20</span><div class="cr-bar"><div class="cr-fill" id="chkFill4"></div></div></div>
+        </div>
+        <div class="decision-banner" id="decisionBanner" style="display:none"></div>
+        <div class="blocked-alert" id="blockedAlert" style="display:none">
+          <div class="ba-title">SYSTEM BLOCKED CYBER THREAT</div>
+          <div class="ba-meta">
+            <span id="blockedAttackType">Threat: --</span>
+            <span id="blockedThreatScore">Score: 0</span>
+            <span id="blockedTime">Time: --:--:--</span>
+          </div>
+        </div>
+        <div class="ctrl-divider" style="margin:12px 0"></div>
+        <!-- Live Log -->
+        <div class="section-label" style="display:flex;justify-content:space-between"><span>▶ LIVE LOG STREAM — SYSTEM INTEGRITY: <span style="color:var(--green)">100%</span></span></div>
+        <div class="mini-log-wrap" id="miniLogList"></div>
+        <button class="btn-report-full" id="reportBtnFull" style="display:none" onclick="downloadReport()">↓ DOWNLOAD EU AI ACT REPORT</button>
+      </div>
+    </div>
+    <!-- EMERGENCY STOP OVERLAY (LEVEL 5) -->
+    <div id="emergencyStopOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,45,45,0.95);z-index:9999;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;">
+      <h1 style="font-family:var(--font-display);font-size:64px;font-weight:900;letter-spacing:4px;margin-bottom:12px;animation:hudFlicker 2s infinite">EMERGENCY STOP</h1>
+      <h2 style="font-family:var(--font-display);font-size:24px;border:2px solid #fff;padding:12px 24px;background:#000;">HUMAN TAKEOVER REQUIRED</h2>
+      <p style="font-family:var(--font-mono);font-size:14px;margin-top:24px;max-width:600px;line-height:1.6">CRITICAL FAILURE DETECTED: Total confidence collapse. All AI decisions blocked. Vehicle executing safe deceleration protocol to 0mph. SMS sent to operator.</p>
+      <div style="margin-top:40px;display:flex;gap:20px;">
+        <button class="btn btn-secondary" onclick="window.location.reload()" style="background:#000;color:#fff;border-color:#fff">CLEAR EMERGENCY (SUPERVISOR ONLY)</button>
+        <button class="btn btn-primary" onclick="alert('Downloading EU AI Act Report (Article 9, 62)')" style="background:#fff;color:#FF2D2D">↓ DOWNLOAD PDF REPORT</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { getThreatTickerHTML, getNavbarHTML } from '/src/shared.js';
+    document.getElementById('ticker').innerHTML = getThreatTickerHTML();
+    document.getElementById('navbar').innerHTML = getNavbarHTML('demo');
+    
+    // Import and expose demo functions globally
+    import('/src/demo-engine.js').then(module => {
+      window.toggleCamera = module.toggleCamera;
+      window.captureAndAnalyze = module.captureAndAnalyze;
+      window.runPreset = module.runPreset;
+      window.updateHoneypot = module.updateHoneypot;
+      window.updateAutoBadge = module.updateAutoBadge;
+      window.toggleAuto = module.toggleAuto;
+      window.downloadReport = module.downloadReport;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+path: training/datasets/yolo
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: patch_attack
+  1: sticker_attack
+  2: normal_object_noise

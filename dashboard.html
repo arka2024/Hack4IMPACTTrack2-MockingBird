@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADVERSAGUARD — THREAT INTELLIGENCE CENTER</title>
+  <meta name="description" content="Real-time adversarial attack monitoring and threat intelligence dashboard.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/src/dashboard.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="hex-grid-bg"></div>
+  <div class="scan-line"></div>
+  <div id="ticker"></div>
+  <div id="navbar"></div>
+
+  <div class="page-content">
+    <div class="dash-container">
+      <!-- Header -->
+      <div class="dash-header animate-up">
+        <div><h1 class="page-title" style="font-size:clamp(24px,4vw,36px)">THREAT INTELLIGENCE CENTER</h1><p style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);margin-top:4px;letter-spacing:.1em">Clearance: Alpha · Encrypted channel active · Last sync: 0s ago</p></div>
+        <div class="dash-header-right">
+          <span class="live-badge"><span class="live-dot"></span>SHIELD ACTIVE</span>
+          <button class="btn btn-secondary btn-sm">EXPORT REPORT</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid animate-up stagger-children">
+        <div class="hud-card kpi-card" style="border-top:2px solid var(--red)"><span class="kpi-label">TOTAL ATTACKS BLOCKED</span><span class="kpi-value" data-kpi="total_blocked" style="color:var(--red)">0</span><span class="kpi-sub">Real-time from live demo</span></div>
+        <div class="hud-card kpi-card" style="border-top:2px solid var(--amber)"><span class="kpi-label">FRAMES ANALYZED</span><span class="kpi-value" data-kpi="total_analyzed" style="color:var(--amber)">0</span><span class="kpi-sub">Demo captures</span></div>
+        <div class="hud-card kpi-card" style="border-top:2px solid var(--green)"><span class="kpi-label">NON-HUMAN OBJECTS</span><span class="kpi-value" data-kpi="objects_detected" style="color:var(--green)">0</span><span class="kpi-sub">Detected in frames</span></div>
+        <div class="hud-card kpi-card" style="border-top:2px solid var(--amber)"><span class="kpi-label">HONEYPOT CAPTURES</span><span class="kpi-value" data-kpi="honeypot_captures" style="color:var(--amber)">0</span><span class="kpi-sub">Deception traps triggered</span></div>
+        <div class="hud-card kpi-card" style="border-top:2px solid var(--purple)"><span class="kpi-label">LAST THREAT TIME</span><span class="kpi-value" data-kpi="last_attack_time" style="color:var(--purple);font-size:14px">--:--:--</span><span class="kpi-sub">Session timestamp</span></div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-row animate-up">
+        <div class="hud-card chart-card">
+          <div class="chart-header"><h3 class="card-title">REAL-TIME THREAT STREAM</h3><span class="live-badge" style="font-size:8px"><span class="live-dot"></span>LIVE</span></div>
+          <canvas id="threatChart" height="280"></canvas>
+        </div>
+        <div class="hud-card chart-card">
+          <div class="chart-header"><h3 class="card-title">HIERARCHY TRIGGER DISTRIBUTION</h3></div>
+          <div style="position:relative">
+            <canvas id="attackChart" height="280"></canvas>
+            <div class="donut-center"><span class="dc-label" style="font-family:var(--font-display);font-size:10px;color:var(--text-faint);letter-spacing:1px">AUTO</span><span class="dc-val" style="font-family:var(--font-display)">MAP</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Critical Incident Log -->
+      <div class="hud-card animate-up" style="margin-top:16px">
+        <div class="log-header">
+          <div style="display:flex;align-items:center;gap:8px"><span class="section-label" style="margin:0">LIVE THREAT DETECTIONS</span><span class="ticker-dot"></span><span style="font-family:var(--font-mono);font-size:11px;color:var(--red)">Real-time from demo</span></div>
+          <span class="live-badge" style="font-size:8px"><span class="live-dot"></span>LIVE</span>
+        </div>
+        <div style="overflow-x:auto">
+        <table class="incident-table"><thead><tr><th>TIME</th><th>SOURCE</th><th>THREAT / ATTACK</th><th>ACTION TAKEN</th><th>FINGERPRINT</th><th style="text-align:right">RESPONSE TIME</th></tr></thead><tbody id="stats-log-body"><tr><td colspan="6" style="text-align:center;color:var(--text-faint);padding:20px">Awaiting demo analysis...</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- Fingerprint Tracker -->
+      <div class="hud-card animate-up" style="margin-top:16px">
+        <div class="fp-layout">
+          <div class="fp-profile">
+            <span class="section-label">ATTACKER FINGERPRINT</span>
+            <div class="fp-id">FP#A3F7</div>
+            <div class="fp-stat"><span>Attack attempts</span><span class="data-value" style="color:var(--red)">7</span></div>
+            <div class="fp-stat"><span>First detected</span><span class="data-value" style="color:var(--text-muted)">14:28:03</span></div>
+            <div class="fp-stat"><span>Last detected</span><span class="data-value" style="color:var(--text-muted)">14:32:11</span></div>
+            <div class="fp-stat"><span>Target zone</span><span class="data-value" style="color:var(--text-muted)">Camera-3</span></div>
+            <div class="fp-stat"><span>Attack vectors</span><div><span class="pill" style="background:#FF2D2D12;color:var(--red);border:1px solid #FF2D2D33;font-size:9px">FGSM</span> <span class="pill" style="background:#FFB80012;color:var(--amber);border:1px solid #FFB80033;font-size:9px">Patch</span></div></div>
+            <div style="margin-top:14px"><span style="font-family:var(--font-mono);font-size:9px;color:var(--text-faint);letter-spacing:.1em">RISK LEVEL</span><span style="float:right;font-family:var(--font-mono);font-size:10px;color:var(--red)">70%</span><div class="risk-bar"><div class="risk-fill" style="width:70%"></div></div></div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:14px"><span class="ticker-dot"></span><span style="font-family:var(--font-mono);font-size:10px;color:var(--red);letter-spacing:.1em">BEING MONITORED</span></div>
+          </div>
+          <div class="fp-timeline">
+            <span class="section-label">ATTACK TIMELINE</span>
+            <div class="timeline-events">
+              <div class="tl-event animate-up" style="transition-delay:.1s"><span class="tl-time">14:28:03</span><span class="tl-dot" style="background:var(--red)"></span><span class="tl-type">FGSM Attack · Blocked</span></div>
+              <div class="tl-event animate-up" style="transition-delay:.25s"><span class="tl-time">14:29:17</span><span class="tl-dot" style="background:var(--amber)"></span><span class="tl-type">Patch Attack · Honeypot</span></div>
+              <div class="tl-event animate-up" style="transition-delay:.4s"><span class="tl-time">14:30:44</span><span class="tl-dot" style="background:var(--red)"></span><span class="tl-type">FGSM Attack · Blocked</span></div>
+              <div class="tl-event animate-up" style="transition-delay:.55s"><span class="tl-time">14:31:58</span><span class="tl-dot" style="background:var(--purple)"></span><span class="tl-type">Pixel Perturb · Review</span></div>
+              <div class="tl-event animate-up" style="transition-delay:.7s"><span class="tl-time">14:32:11</span><span class="tl-dot" style="background:var(--red)"></span><span class="tl-type">FGSM Attack · Blocked</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer"></div>
+
+  <script type="module">
+    import { getThreatTickerHTML, getNavbarHTML, getFooterHTML, initScrollAnimations, initCardTilt } from '/src/shared.js';
+    import { dashboardStats } from '/src/dashboard-stats.js';
+
+    const STATIC_BASELINE = {
+      total_blocked: 2,
+      total_analyzed: 14,
+      objects_detected: 1,
+      non_human_objects: 1,
+      honeypot_captures: 1,
+      last_attack_time: '14:32:11',
+      blocked_today: [
+        { time: new Date().toISOString(), attack: 'Phone/ID-like Object', action: 'BLOCKED', score: 63 },
+        { time: new Date(Date.now() - 90 * 1000).toISOString(), attack: 'Accessory/Object Visible', action: 'BLOCKED', score: 58 }
+      ],
+      threat_distribution: {
+        BLOCKED: 2,
+        EM_STOP: 0,
+        TRANSFER: 1,
+        DEGRADE: 1,
+        RESTRICT: 1,
+        MONITOR: 9
+      }
+    };
+
+    function initThreatStreamChart() {
+      const canvas = document.getElementById('threatChart');
+      if (!canvas) return;
+      if (!window.Chart) {
+        setTimeout(initThreatStreamChart, 250);
+        return;
+      }
+
+      const ctx = canvas.getContext('2d');
+      const fillGrad = ctx.createLinearGradient(0, 0, 0, 280);
+      fillGrad.addColorStop(0, 'rgba(0, 255, 136, 0.24)');
+      fillGrad.addColorStop(1, 'rgba(0, 255, 136, 0.03)');
+
+      new window.Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['-48s', '-40s', '-32s', '-24s', '-16s', '-8s', 'now'],
+          datasets: [{
+            label: 'Threat Score',
+            data: [3, 4, 3, 5, 6, 4, 5],
+            borderColor: '#00FF88',
+            backgroundColor: fillGrad,
+            borderWidth: 3,
+            pointRadius: 4,
+            pointHoverRadius: 5,
+            pointBackgroundColor: '#00FF88',
+            pointBorderColor: '#03111f',
+            pointBorderWidth: 1,
+            fill: true,
+            tension: 0.35
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(148, 163, 184, 0.12)' },
+              ticks: { color: '#64748B', font: { size: 10 } }
+            },
+            y: {
+              min: 0,
+              max: 12,
+              grid: { color: 'rgba(148, 163, 184, 0.12)' },
+              ticks: { color: '#64748B', font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    function initMapFlowChart() {
+      const ctx = document.getElementById('attackChart');
+      if (!ctx || !window.Chart) return;
+
+      new window.Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Monitor', 'Restrict', 'Degrade', 'Transfer', 'EM Stop'],
+          datasets: [{
+            data: [9, 1, 1, 1, 0],
+            backgroundColor: ['#00FF88', '#FFB800', '#F97316', '#8B5CF6', '#FF2D2D'],
+            borderColor: '#0B1220',
+            borderWidth: 2,
+            hoverOffset: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '70%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#94A3B8', boxWidth: 10, font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    document.getElementById('ticker').innerHTML = getThreatTickerHTML();
+    document.getElementById('navbar').innerHTML = getNavbarHTML('dashboard');
+    document.getElementById('footer').innerHTML = getFooterHTML();
+    initScrollAnimations();
+    initCardTilt();
+
+    // Keep dashboard values low and static for baseline display.
+    dashboardStats.stats = {
+      ...dashboardStats.stats,
+      ...STATIC_BASELINE,
+      blocked_today: STATIC_BASELINE.blocked_today,
+      threat_distribution: STATIC_BASELINE.threat_distribution,
+    };
+    dashboardStats.saveToStorage();
+
+    // Initialize dashboard UI and static visual flows.
+    dashboardStats.updateUI();
+    initThreatStreamChart();
+    initMapFlowChart();
+
+    // Optional: Reset stats on page load (set to false to persist across sessions)
+    const resetOnLoad = false;
+    if (resetOnLoad) {
+      dashboardStats.resetStats();
+    }
+  </script>
+</body>
+</html>

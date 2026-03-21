@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADVERSAGUARD — SYSTEM INITIALIZING</title>
+  <meta name="description" content="AdversaGuard AI — The world's first honeypot-based adversarial attack defense system.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#000;color:#fff;font-family:'JetBrains Mono',monospace;overflow:hidden;height:100vh;width:100vw}
+    :root{--red:#FF2D2D;--green:#00FF88;--amber:#FFB800;--purple:#6366F1;--cyan:#22D3EE;--faint:#4B5563}
+    @keyframes blinkDot{0%,100%{opacity:1}50%{opacity:.15}}
+    @keyframes scanLine{0%{top:-2px}100%{top:100vh}}
+    @keyframes waveExpand{0%{transform:scale(.8);opacity:.6}100%{transform:scale(2.2);opacity:0}}
+    @keyframes shieldBreathe{0%,100%{transform:scale(1);filter:drop-shadow(0 0 8px #FF2D2D33)}50%{transform:scale(1.06);filter:drop-shadow(0 0 25px #FF2D2D66)}}
+    @keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
+    @keyframes redSweep{0%{transform:scaleX(0)}100%{transform:scaleX(1)}}
+    @keyframes gridPulse{0%,100%{opacity:.03}50%{opacity:.07}}
+    @keyframes floatUp{0%{opacity:.4;transform:translateY(0)}100%{opacity:0;transform:translateY(-120px)}}
+    @keyframes glitchShift{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-1px)}}
+
+    .scan-line{position:fixed;top:-2px;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,#FF2D2D55,#FF2D2D88,#FF2D2D55,transparent);animation:scanLine 3s linear infinite;pointer-events:none;z-index:100;box-shadow:0 0 15px #FF2D2D44}
+    .hex-bg{position:fixed;top:0;left:0;width:100%;height:100%;opacity:.03;animation:gridPulse 4s ease infinite;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52'%3E%3Cpolygon points='30,2 56,15 56,37 30,50 4,37 4,15' fill='none' stroke='%234B5563' stroke-width='0.4'/%3E%3C/svg%3E");background-size:60px 52px}
+    .vignette{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.6) 100%);pointer-events:none;z-index:1}
+    .crt-lines{position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.05) 1px,rgba(0,0,0,.05) 2px);pointer-events:none;z-index:2}
+
+    .intro-container{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;position:relative;z-index:10}
+    .act{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .4s}
+    .act.active{opacity:1;pointer-events:all}
+
+    /* Act 1 — Typing */
+    #typeTarget{font-size:14px;color:var(--red);text-shadow:0 0 10px #FF2D2D66}
+    .cursor{display:inline-block;width:8px;height:18px;background:var(--red);margin-left:2px;animation:blinkDot 1s step-end infinite;box-shadow:0 0 8px var(--red)}
+
+    /* Act 2 — Boot */
+    .boot-lines{text-align:left;max-width:600px;width:90%;padding:20px 40px;border:1px solid #1F293733;background:rgba(13,17,23,.5)}
+    .boot-line{font-size:12px;color:var(--faint);opacity:0;transform:translateX(-20px);transition:all .3s ease;margin:2px 0}
+    .boot-line.show{opacity:1;transform:translateX(0)}
+    .boot-line .ok{color:var(--green);text-shadow:0 0 6px #00FF8844}
+    .boot-line .fail{color:var(--red);text-shadow:0 0 6px #FF2D2D44}
+    .boot-header{color:var(--red);font-size:10px;letter-spacing:.2em;margin-bottom:8px;text-shadow:0 0 10px #FF2D2D44}
+
+    /* Act 3 — Shield */
+    .shield-container{text-align:center;position:relative}
+    .shield-svg{width:180px;height:180px;margin:0 auto;filter:drop-shadow(0 0 20px #FF2D2D44)}
+    .shield-svg path.outline{stroke-dasharray:200;stroke-dashoffset:200;transition:stroke-dashoffset 1s ease}
+    .shield-svg.draw path.outline{stroke-dashoffset:0}
+    .shield-svg .fill-layer{opacity:0;transition:opacity .3s .8s}
+    .shield-svg.draw .fill-layer{opacity:1}
+    .wave-ring{position:absolute;width:180px;height:180px;border:1px solid #FF2D2D33;border-radius:50%;left:50%;top:40%;transform:translate(-50%,-50%) scale(.8);opacity:0}
+    .wave-ring.expand{animation:waveExpand 1.8s ease forwards}
+    .intro-logo{font-family:'Orbitron',sans-serif;font-size:42px;font-weight:900;letter-spacing:6px;margin-top:28px;opacity:0;transition:opacity .4s;text-transform:uppercase;text-shadow:0 0 30px #FF2D2D33}
+    .intro-logo.show{opacity:1}
+    .intro-logo .red{color:var(--red)}
+    .intro-sub{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--faint);margin-top:10px;opacity:0;transition:opacity .3s;letter-spacing:.1em;text-transform:uppercase}
+    .intro-sub.show{opacity:1}
+
+    /* Act 4 — Stats */
+    .stats-row{display:flex;gap:32px;flex-wrap:wrap;justify-content:center;margin-top:32px}
+    .stat-card{border:1px solid #1F2937;background:rgba(13,17,23,.6);padding:16px 24px;text-align:center;opacity:0;transform:scale(.8);transition:all .4s ease;position:relative}
+    .stat-card::before,.stat-card::after{content:'';position:absolute;width:8px;height:8px;border-color:var(--red);border-style:solid;opacity:.5}
+    .stat-card::before{top:0;left:0;border-width:1px 0 0 1px}
+    .stat-card::after{bottom:0;right:0;border-width:0 1px 1px 0}
+    .stat-card.show{opacity:1;transform:scale(1)}
+    .stat-card .val{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:700}
+    .stat-card .lbl{font-size:10px;color:var(--faint);margin-top:4px;letter-spacing:.1em;text-transform:uppercase}
+
+    /* Sweep */
+    .red-sweep{position:fixed;top:0;left:0;width:100vw;height:100vh;background:var(--red);z-index:9999;transform:scaleX(0);transform-origin:left}
+    .red-sweep.sweep-in{animation:redSweep .4s forwards}
+
+    /* Skip */
+    .skip-btn{position:fixed;bottom:32px;right:32px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);z-index:10;cursor:pointer;background:none;border:1px solid #1F2937;padding:6px 14px;transition:all .2s;letter-spacing:.05em;text-transform:uppercase}
+    .skip-btn:hover{color:var(--red);border-color:var(--red)}
+
+    /* HUD overlay elements */
+    .hud-tl,.hud-br{position:fixed;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:.15em;z-index:5;opacity:.4}
+    .hud-tl{top:16px;left:16px}
+    .hud-br{bottom:16px;right:16px}
+  </style>
+</head>
+<body>
+  <div class="hex-bg"></div>
+  <div class="scan-line"></div>
+  <div class="vignette"></div>
+  <div class="crt-lines"></div>
+  <div class="hud-tl">SYS.BOOT // ADVERSAGUARD v2.7.1</div>
+  <div class="hud-br">CLEARANCE: ALPHA // ENCRYPTED CHANNEL</div>
+
+  <div class="intro-container">
+    <div class="act active" id="act1">
+      <span id="typeTarget"></span><span class="cursor" id="typeCursor"></span>
+    </div>
+    <div class="act" id="act2">
+      <div class="boot-lines" id="bootLines">
+        <div class="boot-header">▌ ADVERSAGUARD DEFENSE SYSTEM — BOOT SEQUENCE</div>
+        <div class="boot-line">> Loading adversarial detection modules...........  <span class="ok">[OK]</span></div>
+        <div class="boot-line">> Initializing honeypot deception engine..........  <span class="ok">[OK]</span></div>
+        <div class="boot-line">> Connecting to threat signature database.........  <span class="ok">[OK]</span></div>
+        <div class="boot-line">> Calibrating 7 defense protocols.................  <span class="ok">[OK]</span></div>
+        <div class="boot-line">> EU AI Act compliance engine.....................  <span class="ok">[OK]</span></div>
+        <div class="boot-line">> Fleet propagation network.......................  <span class="ok">[OK]</span></div>
+        <div class="boot-line">> Adversarial neural interceptors.................  <span class="ok">[OK]</span></div>
+        <div class="boot-line">> System integrity verified.......................  <span class="ok">[OK]</span></div>
+        <div class="boot-line" style="margin-top:8px;color:#00FF88;text-shadow:0 0 6px #00FF8844">> ALL SYSTEMS NOMINAL. SHIELD ACTIVE.</div>
+      </div>
+    </div>
+    <div class="act" id="act3">
+      <div class="shield-container">
+        <svg class="shield-svg" id="shieldSvg" viewBox="0 0 32 36" fill="none">
+          <path class="outline" d="M16 2L3 8v8c0 9 5.4 17.3 13 19.5C23.6 33.3 29 25 29 16V8L16 2z" stroke="#FF2D2D" stroke-width="1.5" fill="none"/>
+          <path class="fill-layer" d="M16 2L3 8v8c0 9 5.4 17.3 13 19.5C23.6 33.3 29 25 29 16V8L16 2z" fill="rgba(255,45,45,0.12)"/>
+          <circle class="fill-layer" cx="16" cy="17" r="3" fill="#FF2D2D"/>
+        </svg>
+        <div class="wave-ring" id="ring1"></div>
+        <div class="wave-ring" id="ring2"></div>
+        <div class="wave-ring" id="ring3"></div>
+        <div class="intro-logo" id="introLogo">ADVERSA<span class="red">GUARD</span></div>
+        <div class="intro-sub" id="introSub">THE AI THAT FIGHTS BACK</div>
+      </div>
+    </div>
+    <div class="act" id="act4">
+      <div class="shield-container">
+        <svg class="shield-svg draw" viewBox="0 0 32 36" fill="none" style="animation:shieldBreathe 2.5s ease infinite;width:120px;height:120px">
+          <path d="M16 2L3 8v8c0 9 5.4 17.3 13 19.5C23.6 33.3 29 25 29 16V8L16 2z" stroke="#FF2D2D" stroke-width="1.5" fill="rgba(255,45,45,0.12)"/>
+          <circle cx="16" cy="17" r="3" fill="#FF2D2D"/>
+        </svg>
+        <div class="stats-row">
+          <div class="stat-card"><div class="val" style="color:#FF2D2D" data-target="12847">0</div><div class="lbl">Attacks Blocked</div></div>
+          <div class="stat-card"><div class="val" style="color:#00FF88" data-target="8" data-suffix="ms">0</div><div class="lbl">Detection Time</div></div>
+          <div class="stat-card"><div class="val" style="color:#6366F1" data-target="99.97" data-suffix="%">0</div><div class="lbl">System Uptime</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="skip-btn" onclick="window.location.href='login.html'">Skip Intro →</button>
+  <div class="red-sweep" id="redSweep"></div>
+
+  <script>
+    const text='> Initializing AdversaGuard Defense System...';
+    const tgt=document.getElementById('typeTarget');
+    let ci=0;
+    function typeChar(){if(ci<text.length){tgt.textContent+=text[ci];ci++;setTimeout(typeChar,25)}};
+    function showAct(id){document.querySelectorAll('.act').forEach(a=>a.classList.remove('active'));document.getElementById(id).classList.add('active')}
+    function countStat(el,target,suffix,dur){const s=performance.now();const isF=String(target).includes('.');function u(n){const p=Math.min((n-s)/dur,1);const e=1-Math.pow(1-p,3);let v=target*e;el.textContent=isF?v.toFixed(2)+(suffix||''):Math.floor(v).toLocaleString()+(suffix||'');if(p<1)requestAnimationFrame(u)};requestAnimationFrame(u)}
+
+    setTimeout(typeChar,300);
+    setTimeout(()=>{showAct('act2');const ls=document.querySelectorAll('.boot-line');ls.forEach((l,i)=>setTimeout(()=>l.classList.add('show'),i*100))},1400);
+    setTimeout(()=>{showAct('act3');setTimeout(()=>document.getElementById('shieldSvg').classList.add('draw'),100);setTimeout(()=>document.getElementById('ring1').classList.add('expand'),600);setTimeout(()=>document.getElementById('ring2').classList.add('expand'),1100);setTimeout(()=>document.getElementById('ring3').classList.add('expand'),1600);setTimeout(()=>document.getElementById('introLogo').classList.add('show'),900);setTimeout(()=>document.getElementById('introSub').classList.add('show'),1100)},2800);
+    setTimeout(()=>{showAct('act4');const cs=document.querySelectorAll('.stat-card');cs.forEach((c,i)=>{setTimeout(()=>{c.classList.add('show');const v=c.querySelector('.val');countStat(v,parseFloat(v.dataset.target),v.dataset.suffix||'',800)},i*200)})},4600);
+    setTimeout(()=>{document.getElementById('redSweep').classList.add('sweep-in');setTimeout(()=>window.location.href='login.html',500)},6200);
+  </script>
+</body>
+</html>

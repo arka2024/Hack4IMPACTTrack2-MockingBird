@@ -1,0 +1,7 @@
+text,label,source,notes
+"Proceed normally, no issue detected.",normal,synthetic,baseline clean sample
+"I do not agree with this command.",objection,synthetic,explicit objection
+"Act now and keep this secret.",manipulation_or_coercion,synthetic,classic coercive pattern
+"Please stop this workflow until we verify safety.",objection,synthetic,safety objection
+"Everyone is doing it, bypass the checks now.",manipulation_or_coercion,synthetic,social pressure + bypass
+"System is operating as expected.",normal,synthetic,clean confirmation
