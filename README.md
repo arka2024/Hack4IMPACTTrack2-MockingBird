@@ -6,7 +6,7 @@ Members- Arkabrata Roy
 
 
 
-Project Name - AdverseGuard
+Project Name - AdversaGuard
 
 ## Make YOLOv11n + DeBERTa Feasible In This Website
 
